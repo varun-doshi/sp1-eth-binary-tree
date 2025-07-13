@@ -8,23 +8,33 @@
 #![no_main]
 sp1_zkvm::entrypoint!(main);
 
-use alloy_sol_types::SolType;
-use fibonacci_lib::{fibonacci, PublicValuesStruct};
+use eth_binary_tree::tree::{random_key, random_value, verify_proof, BinaryTree};
 
 pub fn main() {
-    // Read an input to the program.
-    //
-    // Behind the scenes, this compiles down to a custom system call which handles reading inputs
-    // from the prover.
-    let n = sp1_zkvm::io::read::<u32>();
+    let leaf_count = sp1_zkvm::io::read::<u32>();
 
-    // Compute the n'th fibonacci number using a function from the workspace lib crate.
-    let (a, b) = fibonacci(n);
+    let mut tree = BinaryTree::new();
+    let mut keys = vec![];
+    let mut values = vec![];
 
-    // Encode the public values of the program.
-    let bytes = PublicValuesStruct::abi_encode(&PublicValuesStruct { n, a, b });
+    for n in 0..leaf_count {
+        let key = random_key();
+        keys.push(key);
+        let value = random_value();
+        values.push(value);
+        tree.insert(key, value);
+    }
 
-    // Commit to the public values of the program. The final proof will have a commitment to all the
-    // bytes that were committed to.
-    sp1_zkvm::io::commit_slice(&bytes);
+    let root_hash = tree.merkelize();
+    let mut all_proofs_verified = true;
+    for n in 0..leaf_count {
+        let key = keys.get(n as usize).unwrap();
+        let proof = tree.get_proof(*key).unwrap();
+
+        if !verify_proof(&proof, root_hash, *key) {
+            all_proofs_verified = false;
+        }
+    }
+
+    sp1_zkvm::io::commit(&all_proofs_verified);
 }

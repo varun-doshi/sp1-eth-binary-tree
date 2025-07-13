@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "lib",
     "program",
     "script",
 ]
@@ -8,3 +7,4 @@ resolver = "2"
 
 [workspace.dependencies]
 alloy-sol-types = "1.0"
+eth-binary-tree = {git = "https://github.com/varun-doshi/eth-binary-tree.git",branch = "main"}

@@ -9,10 +9,6 @@ name = "fibonacci"
 path = "src/bin/main.rs"
 
 [[bin]]
-name = "evm"
-path = "src/bin/evm.rs"
-
-[[bin]]
 name = "vkey"
 path = "src/bin/vkey.rs"
 
@@ -24,7 +20,7 @@ clap = { version = "4.0", features = ["derive", "env"] }
 tracing = "0.1.40"
 hex = "0.4.3"
 alloy-sol-types = { workspace = true }
-fibonacci-lib = { path = "../lib" }
+eth-binary-tree = {git = "https://github.com/varun-doshi/eth-binary-tree.git",branch = "main"}
 dotenv = "0.15.0"
 
 [build-dependencies]
